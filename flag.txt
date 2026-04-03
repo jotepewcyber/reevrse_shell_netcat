@@ -1,0 +1,1 @@
+CTF{awesome_work_flag_captured}
