@@ -9,21 +9,15 @@ const { searchParams } = new URL(req.url);
  let cmd = searchParams.get("cmd") || "";
 
 
-if(cmd!=='ls' && cmd!=='type flag.txt' && cmd!=='dir' && cmd!=='cat flag.txt' && cmd!=='ping 8.8.8.8' && cmd!=='dir; type flag.txt' ){ 
+if(cmd!=='ls' && cmd!=='cat flag.txt' && cmd!=='ls -la' && cmd!=='ping 8.8.8.8' && cmd!=='ls; cat flag.txt' && cmd!=='ls -la; cat flag.txt' ) { 
     cmd=`echo ${cmd} is not allowed`;
-    // return (
-    //     <div className="min-h-screen flex items-center justify-center bg-[#031023] text-red-400 font-mono">
-    //       <p className="text-lg tracking-widest">
-    //         Invalid command. 
-    //       </p>
-    //     </div>
-    //   );
+    
 }
 
 
 const command=cmd;
 
-return new Promise((resolve) => {
+return new Promise<Response>((resolve) => {
 
     exec(command, (error, stdout, stderr) => {
 let op='';
@@ -37,7 +31,7 @@ op=stderr;
 
         resolve(new Response(op));
     });
-    // reject(new Response('Error executing command', { status: 500 }));
+   
 
 });
 }

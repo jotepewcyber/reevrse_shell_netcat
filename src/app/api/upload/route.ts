@@ -235,13 +235,13 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File;
     if (!file)
-      return NextResponse.json({ error: "No script uploaded" }, { status: 400 });
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
 
     const scriptContent = await file.text();
 
-    if (!scriptContent.includes("/dev/tcp/") && !scriptContent.includes("bash -i"))
-      return NextResponse.json({ error: "Script must contain a bash reverse shell" }, { status: 400 });
-
+    // if (!scriptContent.includes("/dev/tcp/") && !scriptContent.includes("bash -i"))
+    //   return NextResponse.json({ error: "Script must contain a bash reverse shell" }, { status: 400 });
+if (scriptContent.includes("/dev/tcp/") || scriptContent.includes("bash -i")){
     const sessionId  = randomUUID().slice(0, 8);
     const uploadDir  = `/tmp/ctf-uploads/${sessionId}`;
     const scriptPath = path.join(uploadDir, "shell.sh");
@@ -258,24 +258,28 @@ export async function POST(req: NextRequest) {
     await new Promise(r => setTimeout(r, 1500));
 
     await execAsync(`docker cp ${scriptPath} ${containerName}:/tmp/shell.sh`);
+    //copies file from my machine to container at location /tmp/shell.sh
 
     // removed: -d flag so errors are visible
     await execAsync(`docker exec ${containerName} bash /tmp/shell.sh`);
-
-    setTimeout(async () => {
-      await execAsync(`docker rm -f ${containerName} 2>/dev/null || true`);
-    }, TTL * 1000);
+}
+else {
+  return NextResponse.json({ error: "Script must contain a bash reverse shell one-liner" }, { status: 400 });
+}
+    // setTimeout(async () => {
+    //   await execAsync(`docker rm -f ${containerName} 2>/dev/null || true`);
+    // }, TTL * 1000);
 
     // Return the attacker IP so player knows what IP to use in their script
-    const { stdout: attackerIp } = await execAsync(
-      `docker inspect attacker --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'`
-    );
+    // const { stdout: attackerIp } = await execAsync(
+    //   `docker inspect attacker --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'`
+    // );
 
-    return NextResponse.json({
-      success: true,
-      attacker_ip: attackerIp.trim(), // tell the player what IP to point reverse shell at
-      session_id: sessionId,
-    });
+    // return NextResponse.json({
+    //   success: true,
+    //   attacker_ip: attackerIp.trim(), // tell the player what IP to point reverse shell at
+    //   session_id: sessionId,
+    // });
 
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
