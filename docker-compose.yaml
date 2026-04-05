@@ -1,48 +1,4 @@
-# # docker-compose.yml
-# version: '3.8'
 
-# services:
-#   ctf-challenge:
-#     build:
-#       context: .
-#       dockerfile: src/docker/Dockerfile
-#     #container_name: ctf_netcat_challenge
-#     ports:
-#       - "4444:4444"       # Challenge port
-#     networks:
-#       - CTF    #--------------SEE THIS---------------#
-#     # Hard resource limits per instance
-#     mem_limit: 128m
-#     cpus: '0.5'
-#     # Security: drop all capabilities except what's needed
-#     cap_drop:
-#       - ALL
-#     cap_add:
-#       - NET_BIND_SERVICE
-#     # Prevent container breakout
-#     security_opt:
-#       - no-new-privileges:true
-#     # Read-only filesystem except /tmp
-#     read_only: true
-#     tmpfs:
-#       - /tmp:size=10m
-#     restart: unless-stopped
-
-#   # Web platform (optional)
-#   ctf-web:
-#     image: nginx:alpine
-#     ports:
-#       - "80:80"
-#     volumes:
-#       - ./web:/usr/share/nginx/html
-#     networks:
-#       - CTF
-
-# networks:
-#   CTF:
-#     name: CTF
-#     driver: bridge
-#     internal: false   # Set true to fully isolate from internet
 
 
 version: '3.8'
@@ -80,3 +36,6 @@ networks:
     name: CTF
     driver: bridge
     internal: false 
+
+
+  
